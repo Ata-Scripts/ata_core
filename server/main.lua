@@ -330,6 +330,21 @@ end
 exports('SendNotificationToAdmins', SendNotificationToAdmins)
 
 
+------------------------------------------------------------------------------------------------
+
+
+function PlayerHasGroup(source,group)
+    if isESX then
+        local xPlayer = ESX.GetPlayerFromId(source)
+        return xPlayer.getGroup() == group
+    elseif isQBCore then
+        local xPlayer = QBCore.Functions.GetPlayer(source)
+        return xPlayer.PlayerData.group == group
+    end
+end
+exports('PlayerHasGroup', PlayerHasGroup)
+
+
 
 
 
