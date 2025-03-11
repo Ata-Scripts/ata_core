@@ -9,6 +9,11 @@ function Notification(massage, type, time)
 end 
 exports("Notification", Notification)
 
+AddEventHandler('ata_core')
+RegisterNetEvent('ata_core:Notification', function(massage, type, time)
+    Notification(massage, type, time)
+end)
+
 ------------------------------------------------------------------------------------------------
 
 

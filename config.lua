@@ -15,7 +15,10 @@ Config.Target = 'ox_target' -- ox_target , qb-target
 Config.SQL = 'oxmysql' -- oxmysql , ghmattimysql , mysql-async
 
 
-
+Config.AdminGroup = {
+    'admin',
+    'god'
+}
 
 
 

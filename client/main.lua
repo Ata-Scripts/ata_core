@@ -42,7 +42,7 @@ local function Framework()
         return QBCore
     end
 end
-
+Framework()
 exports('Framework', Framework)
 
 
@@ -158,6 +158,9 @@ end
 exports("Copy", Copy)
 
 ------------------------------------------------------------------------------------------------
+
+
+
 
 
 
