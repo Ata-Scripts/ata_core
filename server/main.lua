@@ -345,6 +345,20 @@ end
 exports('PlayerHasGroup', PlayerHasGroup)
 
 
+------------------------------------------------------------------------------------------------
+
+function GetPlayerGroup(source)
+    if isESX then
+        local xPlayer = ESX.GetPlayerFromId(source)
+        return xPlayer.getGroup()
+    elseif isQBCore then
+        local xPlayer = QBCore.Functions.GetPlayer(source)
+        return xPlayer.PlayerData.group
+    end
+end
+exports('GetPlayerGroup', GetPlayerGroup)
+
+
 
 
 
