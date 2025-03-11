@@ -1,0 +1,15 @@
+name: Release
+
+permissions:
+  contents: write
+
+
+on:
+  push:
+    branches: 
+      - main 
+ 
+jobs: 
+  call-shared-workflow: 
+    uses: Ata-Scripts/resource-shared-workflows/.github/workflows/fivem-release.yml@main
+ 
