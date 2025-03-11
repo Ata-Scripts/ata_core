@@ -9,19 +9,23 @@ ui_page 'html/index.html'
 
 
 files {
-    'html/**'
+    -- 'html/**'
 }
 
 shared_scripts {
-	'shared/*.lua'
+    '@ox_lib/init.lua',
+	'config.lua'
 }
 
 client_scripts {
-	'client/*.lua'
+	'client/main.lua',
+	'client/can-edit.lua',
+	'client/CreateNPC.lua'
 }
 
 server_scripts {
-	'server/*.lua'
+	'server/database.lua',
+	'server/main.lua'
 }
 
 
