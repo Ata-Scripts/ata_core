@@ -259,18 +259,23 @@ exports('GetPhoneNumber', GetPhoneNumber)
 
 
 ------------------------------------------------------------------------------------------------
+---
+
 
 function GetPlayerGroup(source)
     if isESX then
         local xPlayer = ESX.GetPlayerFromId(source)
         return xPlayer.getGroup()
     elseif isQBCore then
-        local xPlayer = QBCore.Functions.GetPlayer(source)
-        return xPlayer.PlayerData.group
+         local permissions = QBCore.Functions.GetPermission(tonumber(source))
+            for group, hasPermission in pairs(permissions) do
+            if hasPermission then
+                return group
+            end
+        end
     end
 end
-exports('GetPlayerGroup', GetPlayerGroup)
-
+exports('GetPlayerGroup', GetPlayerGroup) 
 
 ------------------------------------------------------------------------------------------------
 
@@ -287,6 +292,18 @@ exports('GetPlayerIdentifier', GetPlayerIdentifier)
 
 
 ------------------------------------------------------------------------------------------------
+
+function GetAllPlayers()
+    local players = {}
+    if isESX then
+        players = ESX.GetPlayers()
+    elseif isQBCore then
+        players = QBCore.Functions.GetPlayers()
+    end
+    return players
+end
+exports('GetAllPlayers', GetAllPlayers)
+-----
 
 
 function GetOnlineAdmins()
@@ -430,19 +447,6 @@ function PlayerHasGroup(source,group)
 end
 exports('PlayerHasGroup', PlayerHasGroup)
 
-
-------------------------------------------------------------------------------------------------
-
-function GetPlayerGroup(source)
-    if isESX then
-        local xPlayer = ESX.GetPlayerFromId(source)
-        return xPlayer.getGroup()
-    elseif isQBCore then
-        local xPlayer = QBCore.Functions.GetPlayer(source)
-        return xPlayer.PlayerData.group
-    end
-end
-exports('GetPlayerGroup', GetPlayerGroup)
 
 ------------------------------------------------------------------------------------------------
 

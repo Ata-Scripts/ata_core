@@ -4,12 +4,12 @@ function Notification(massage, type, time)
     if isESX then
         ESX.ShowNotification(massage, type, time)
     elseif isQBCore then
-        QBCore.ShowNotification(massage, type, time)
+        QBCore.Functions.Notify(massage, type, time)
     end
 end 
 exports("Notification", Notification)
 
-AddEventHandler('ata_core')
+AddEventHandler('ata_core') 
 RegisterNetEvent('ata_core:Notification', function(massage, type, time)
     Notification(massage, type, time)
 end)

@@ -59,7 +59,7 @@ exports("FoundFramework", FoundFramework)
 
 
 
-function CallBackServer(event, callback, ...)
+function ServerCallback(event, callback, ...)
     if isESX then
         ESX.TriggerServerCallback(event, callback, ...)
     elseif isQBCore then
@@ -68,7 +68,7 @@ function CallBackServer(event, callback, ...)
         print('Callback Server Not Found')
     end
 end
-exports("CallBackServer", CallBackServer)   
+exports("ServerCallback", ServerCallback)   
 
 
 function GetPlayerJob()
