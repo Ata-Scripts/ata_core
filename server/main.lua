@@ -142,11 +142,11 @@ function AddItem(source, item, count)
         end
     elseif isQBCore then
         local xPlayer = QBCore.Functions.GetPlayer(source)
-        if xPlayer.Functions.CanCarryItem(item, count) then
-            xPlayer.Functions.AddItem(item, count)
-            Notification(source, 'you dont have space in your inventory', 'error')
+        local canCarry = xPlayer.Functions.AddItem(item, count)
+        if canCarry then
             return true
         else
+            Notification(source, 'you dont have space in your inventory', 'error')
             return false
         end
     end
@@ -290,31 +290,42 @@ exports('GetPlayerIdentifier', GetPlayerIdentifier)
 
 
 function GetOnlineAdmins()
-    local admins = {}
+    local adminIds = {}
     if isESX then
         local players = ESX.GetPlayers()
         for _, playerId in pairs(players) do
             local xPlayer = ESX.GetPlayerFromId(playerId)
-            local group = xPlayer.getGroup()
-            for _, adminGroup in pairs(Config.AdminGroup) do
-                if group == adminGroup then
-                    table.insert(admins, xPlayer.identifier)
+            if xPlayer then
+                local group = xPlayer.getGroup()
+                for _, adminGroup in pairs(Config.AdminGroup) do
+                    if group == adminGroup then
+                        table.insert(adminIds, playerId)
+                        break
+                    end
                 end
             end
-        end
+        end 
     elseif isQBCore then
         local players = QBCore.Functions.GetPlayers()
         for _, playerId in pairs(players) do
             local xPlayer = QBCore.Functions.GetPlayer(tonumber(playerId))
-            local group = xPlayer.PlayerData.group
-            for _, adminGroup in pairs(Config.AdminGroup) do
-                if group == adminGroup then
-                    table.insert(admins, xPlayer.PlayerData.citizenid)
+            if xPlayer then
+                local permission = QBCore.Functions.GetPermission(tonumber(playerId))
+                if permission then
+                    for _, adminGroup in pairs(Config.AdminGroup) do
+                        if permission[adminGroup] then
+                            table.insert(adminIds, tonumber(playerId))
+                            break
+                        end
+                    end
                 end
             end
         end
     end
-    return admins
+    
+    -- Example of return value:
+    -- adminIds = {1, 5, 10} (server IDs of admin players)
+    return adminIds
 end
 exports('GetOnlineAdmins', GetOnlineAdmins)
 

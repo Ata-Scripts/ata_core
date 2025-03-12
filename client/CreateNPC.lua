@@ -173,7 +173,7 @@ function CreateNPCWithKey(npcModel, coords, heading, text, eventName, eventData,
                         distance = 2.0,
                         action = function()
                             if eventType == "server" then
-                                if eventData then
+                                if eventData then 
                                     TriggerServerEvent(eventName, eventData)
                                 else
                                     TriggerServerEvent(eventName)
