@@ -159,6 +159,21 @@ exports("Copy", Copy)
 
 ------------------------------------------------------------------------------------------------
 
+function PlayerHaveCharacter()
+    if isESX then
+        while not ESX.IsPlayerLoaded() do
+            Wait(250)
+        end
+        return true
+    elseif isQBCore then
+        while not LocalPlayer.state.isLoggedIn do
+            Wait(250)
+        end
+        return true
+    end
+    return false
+end
+exports("PlayerHaveCharacter", PlayerHaveCharacter)
 
 
 

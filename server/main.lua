@@ -32,11 +32,11 @@ exports('Framework', Framework)
 
 ------------------------------------------------------------------------------------------------
 
-function CreateCallback(event, callback)
+function CreateCallback(event, callback, ...)
     if isESX then 
-        ESX.RegisterServerCallback(event, callback)
+        ESX.RegisterServerCallback(event, callback, ...)
     elseif isQBCore then
-        QBCore.Functions.CreateCallback(event, callback)
+        QBCore.Functions.CreateCallback(event, callback, ...)
     else
         return false
     end
@@ -55,13 +55,13 @@ exports('Notification', Notification)
 
 ------------------------------------------------------------------------------------------------
 
-function addMoney(source,amount,type)
+function AddMoney(source,amount,type)
     if isESX then
         local xPlayer = ESX.GetPlayerFromId(source)
         if type == 'cash' then
             xPlayer.addMoney(amount)
         elseif type == 'bank' then
-            xPlayer.addAccount('bank', amount)
+            xPlayer.addAccountMoney('bank', amount)
         end
     elseif isQBCore then
         local xPlayer = QBCore.Functions.GetPlayer(source)
@@ -72,7 +72,7 @@ function addMoney(source,amount,type)
         end
     end
 end
-exports('addMoney', addMoney)
+exports('AddMoney', AddMoney)
 
 
 ------------------------------------------------------------------------------------------------
@@ -103,8 +103,8 @@ function RemoveMoney(source,amount,type)
     if isESX then
         local xPlayer = ESX.GetPlayerFromId(source)
         if type == 'cash' then
-            xPlayer.removeAccountMoney('cash',amount)
-        elseif type == 'bank' then
+            xPlayer.removeMoney(amount) -- Fixed: use removeMoney for cash in ESX
+        elseif type == 'bank' then  
             xPlayer.removeAccountMoney('bank', amount)
         end
     elseif isQBCore then
@@ -115,25 +115,48 @@ function RemoveMoney(source,amount,type)
             xPlayer.Functions.RemoveMoney('bank', amount)
         end
     end
+    return true
 end
 exports('RemoveMoney', RemoveMoney)
 
 
 ------------------------------------------------------------------------------------------------
 
-function AddItem(source,item,count)
-    if isESX then
+function AddItem(source, item, count)
+    if GetResourceState('ox_inventory') == 'started' then
+        local canCarry = exports.ox_inventory:CanCarryItem(source, item, count)
+        if canCarry then
+            exports.ox_inventory:AddItem(source, item, count)
+            return true
+        else
+            return false
+        end
+    elseif isESX then
         local xPlayer = ESX.GetPlayerFromId(source)
-        xPlayer.addInventoryItem(item, count)
+        if xPlayer.canCarryItem(item, count) then
+            xPlayer.addInventoryItem(item, count)
+            return true
+        else
+            Notification(source, 'you dont have space in your inventory', 'error')
+            return false
+        end
     elseif isQBCore then
         local xPlayer = QBCore.Functions.GetPlayer(source)
-        xPlayer.Functions.AddItem(item, count) -- Fixed QBCore function name
+        if xPlayer.Functions.CanCarryItem(item, count) then
+            xPlayer.Functions.AddItem(item, count)
+            Notification(source, 'you dont have space in your inventory', 'error')
+            return true
+        else
+            return false
+        end
     end
+    return false
 end
 exports('AddItem', AddItem)
 
-
+ 
 ------------------------------------------------------------------------------------------------
+
 
 function RemoveItem(source,item,count)
     if isESX then
@@ -174,6 +197,36 @@ function HasCountItem(source,item)
 
 end
 exports('HasCountItem', HasCountItem)
+
+
+
+------------------------------------------------------------------------------------------------
+
+
+function GetPlayerInventory(source)
+    local inv = {}
+
+    if isESX then
+            items = ESX.GetPlayerFromId(source).getInventory()
+    elseif isQBCore then
+            items = QBCore.Functions.GetPlayer(source).PlayerData.items
+    end
+    
+    for k,v in pairs(items) do
+        if (v.amount and v.amount > 0) or (v.count and v.count > 0) then
+                table.insert(inv, {
+                    name  = v.name, 
+                    label = v.label,
+                    count = (v.amount or v.count),
+                    info  = (v.info or v.metadata or false),
+                })
+        end
+    end
+    
+    return inv
+end
+exports('GetPlayerInventory', GetPlayerInventory)
+
 
 
 ------------------------------------------------------------------------------------------------
@@ -316,7 +369,29 @@ function GetPlayerJobLabel(job)
 end
 exports('GetPlayerJobLabel', GetPlayerJobLabel)
 
-------------------------------------------------------------------------------------------------
+
+------
+---
+
+function GetPlayerJob(source)
+    if isESX then
+        return ESX.GetPlayerFromId(source).job.name
+    elseif isQBCore then
+        return QBCore.Functions.GetPlayer(source).PlayerData.job
+    end
+end
+exports('GetPlayerJob', GetPlayerJob)
+
+---------------------------------------------------------------------------------------------
+
+function GetPlayerJob(source)
+    if isESX then
+        return ESX.GetPlayerFromId(source).getJob()
+    elseif isQBCore then
+        return QBCore.Functions.GetPlayer(source).PlayerData.job
+    end
+end
+exports('GetPlayerJob', GetPlayerJob)
 
 function SendNotificationToAdmins(msg)
     local admins = GetOnlineAdmins()
@@ -358,6 +433,32 @@ function GetPlayerGroup(source)
 end
 exports('GetPlayerGroup', GetPlayerGroup)
 
+------------------------------------------------------------------------------------------------
+
+function GetPlayerSkin(source)
+    if isESX then
+        local xPlayer = ESX.GetPlayerFromId(source)
+        return xPlayer.getSkin()
+    elseif isQBCore then
+        local xPlayer = QBCore.Functions.GetPlayer(source)
+        return xPlayer.PlayerData.skin
+    end
+end
+
+
+-- ESX Events
+AddEventHandler('esx:playerLoaded', function(source, xPlayer, isNew)
+    local src = source
+    if xPlayer then
+        TriggerClientEvent('ata_core:NewPlayerCreatedCharacter', src)
+    end
+end)
+
+-- QBCore Events 
+AddEventHandler('QBCore:Server:PlayerLoaded', function(Player)
+    local src = Player.PlayerData.source
+    TriggerClientEvent('ata_core:NewPlayerCreatedCharacter', src)
+end)
 
 
 
