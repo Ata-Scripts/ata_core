@@ -143,6 +143,59 @@ end
 
 exports("CreateTableIfNotExists", CreateTableIfNotExists)
 
+-- Example of CreateTableIfNotExists:
+-- exports['ata_core']:CreateTableIfNotExists("players", {
+--     id = "INT AUTO_INCREMENT PRIMARY KEY",
+--     identifier = "VARCHAR(100) NOT NULL",
+--     firstname = "VARCHAR(50)",
+--     lastname = "VARCHAR(50)",
+--     money = "INT DEFAULT 0",
+--     bank = "INT DEFAULT 1000",
+--     created_at = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP"
+-- })
+
+-- Check if columns exist in table and add them if they don't
+local function AddColumnsIfNotExists(tableName, columns)
+	if type(tableName) ~= "string" or type(columns) ~= "table" then
+		return nil
+	end
+	
+	-- First check if table exists
+	local tableExists = ExecuteSQL("SHOW TABLES LIKE ?", {tableName})
+	if not tableExists or #tableExists == 0 then
+		return nil
+	end
+	
+	-- Get existing columns
+	local existingColumns = ExecuteSQL("SHOW COLUMNS FROM " .. tableName)
+	if not existingColumns then return nil end
+	
+	local existingColumnNames = {}
+	for _, column in ipairs(existingColumns) do
+		existingColumnNames[column.Field] = true
+	end
+	
+	-- Add missing columns
+	for columnName, definition in pairs(columns) do
+		if type(columnName) == "string" and type(definition) == "string" and not existingColumnNames[columnName] then
+			local alterQuery = string.format("ALTER TABLE %s ADD COLUMN %s %s", tableName, columnName, definition)
+			ExecuteSQL(alterQuery)
+		end
+	end
+	
+	return true
+end
+
+exports("AddColumnsIfNotExists", AddColumnsIfNotExists)
+
+-- Example of AddColumnsIfNotExists:
+-- exports['ata_core']:AddColumnsIfNotExists("players", {
+--     phone_number = "VARCHAR(20) DEFAULT NULL",
+--     job = "VARCHAR(50) DEFAULT 'unemployed'",
+--     job_grade = "INT DEFAULT 0",
+--     last_login = "TIMESTAMP NULL"
+-- })
+
 -- Find data in table and return result
 local function FindSQL(tableName, column, where)
 	if type(tableName) ~= "string" or type(column) ~= "string" or type(where) ~= "string" then
