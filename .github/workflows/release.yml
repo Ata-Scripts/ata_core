@@ -11,5 +11,5 @@ on:
  
 jobs: 
   call-shared-workflow: 
-    uses: Ata-Scripts/resource-shared-workflows/.github/workflows/fivem-release.yml@main
+    uses: Ata-Scripts/resource-shared-workflows/.github/workflows/fivem-release-one.yml@main
  
