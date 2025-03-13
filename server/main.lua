@@ -493,7 +493,50 @@ end)
 
 
 
+local function VersionCheck(resource)
+    local url = 'https://raw.githubusercontent.com/Ata-Scripts/ata_version/main/versions.json'
+    local current = GetResourceMetadata(resource, 'version', 0)
+    
+    if not current then
+        print('[^1ERROR^0] Could not get version for ' .. resource .. '. Make sure version is set in fxmanifest.lua')
+        return
+    end
 
+    PerformHttpRequest(url, function(err, response, headers)
+        if err == 200 then
+            local success, data = pcall(json.decode, response)
+            if success and data then
+                -- Convert resource name to lowercase for case-insensitive comparison
+                local resourceLower = string.lower(resource)
+                local found = false
+                
+                -- Check for the resource in the version list (case-insensitive)
+                for k, v in pairs(data) do
+                    if string.lower(k) == resourceLower then
+                        found = true
+                        local latest = v
+                        
+                        -- Compare versions
+                        if latest ~= current then
+                            print('\n')
+                            print('^3[' .. resource .. ']  UPDATE AVAILABLE^0')
+                            print('^3[' .. resource .. '] ^1 You are using version: ' .. current .. '^0')
+                            print('^3[' .. resource .. '] ^2 New version available: ' .. latest .. '^0')
+                            print('\n')
+                         end
+                        break
+                    end
+                end
+            end
+        end
+    end, 'GET', '', { ["Content-Type"] = 'application/json' })
+end
 
+exports('VersionCheck', VersionCheck)
+
+CreateThread(function()
+    Wait(10000) -- Wait for resource to fully start
+    VersionCheck('ata_core')
+end)
 
 

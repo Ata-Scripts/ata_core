@@ -22,6 +22,6 @@ server_scripts {
 }
 
 
-escrow_ignore {
-
+dependencies {
+	'ox_lib'
 }
