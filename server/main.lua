@@ -428,7 +428,7 @@ exports('GetPlayerJob', GetPlayerJob)
 ---------------------------------------------------------------------------------------------
 
 function GetPlayerJob(source)
-    if isESX then
+    if isESX then 
         return ESX.GetPlayerFromId(source).getJob()
     elseif isQBCore then
         return QBCore.Functions.GetPlayer(source).PlayerData.job
