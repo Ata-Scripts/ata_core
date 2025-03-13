@@ -14,7 +14,7 @@ Config.Target = 'ox_target' -- ox_target , qb-target
 
 Config.SQL = 'oxmysql' -- oxmysql , ghmattimysql , mysql-async
 
-Config.Debug = true ---- true or false (for debug)
+Config.Debug = false ---- true or false (for debug)
 
 
 Config.AdminGroup = {
