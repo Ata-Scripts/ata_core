@@ -5,13 +5,6 @@ description 'All Rights Reserved - ata.tebex.io'
 version '1.0.5' 
 lua54 'yes'
 
-ui_page 'html/index.html'
-
-
-files {
-    -- 'html/**'
-}
-
 shared_scripts {
     '@ox_lib/init.lua',
 	'config.lua'
