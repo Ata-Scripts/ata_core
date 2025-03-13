@@ -21,14 +21,6 @@ Config.AdminGroup = {
 }
 
 
-
-
-
-
-
-
-
-
 function MoneyType(Money)
     local formatted = tostring(Money)
     formatted = formatted:reverse():gsub("(%d%d%d)", "%1,")

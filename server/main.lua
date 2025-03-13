@@ -43,6 +43,21 @@ function CreateCallback(event, callback, ...)
 end 
 exports('CreateCallback', CreateCallback)
 
+
+
+------------------------------------------------------------------------------------------------
+
+function FoundFramework()
+    if isESX then
+        return 'esx'
+    elseif isQBCore then
+        return 'qb-core'
+    else
+        return false
+    end
+end
+exports("FoundFramework", FoundFramework)
+
 ------------------------------------------------------------------------------------------------
 
 function Notification (source, message, type, time)
