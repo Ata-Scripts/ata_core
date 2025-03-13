@@ -157,37 +157,41 @@ exports("CreateTableIfNotExists", CreateTableIfNotExists)
 -- Check if columns exist in table and add them if they don't
 local function AddColumnsIfNotExists(tableName, columns)
 	if type(tableName) ~= "string" or type(columns) ~= "table" then
-		return nil
+		return false
 	end
 	
 	-- First check if table exists
 	local tableExists = ExecuteSQL("SHOW TABLES LIKE ?", {tableName})
 	if not tableExists or #tableExists == 0 then
-		return nil
+		return false
 	end
 	
 	-- Get existing columns
 	local existingColumns = ExecuteSQL("SHOW COLUMNS FROM " .. tableName)
-	if not existingColumns then return nil end
+	if not existingColumns then return false end
 	
 	local existingColumnNames = {}
 	for _, column in ipairs(existingColumns) do
 		existingColumnNames[column.Field] = true
 	end
 	
+	local columnsAdded = false
 	-- Add missing columns
 	for columnName, definition in pairs(columns) do
 		if type(columnName) == "string" and type(definition) == "string" and not existingColumnNames[columnName] then
 			local alterQuery = string.format("ALTER TABLE %s ADD COLUMN %s %s", tableName, columnName, definition)
-			ExecuteSQL(alterQuery)
+			local result = ExecuteSQL(alterQuery)
+			if result then
+				columnsAdded = true
+			end
 		end
 	end
 	
-	return true
+	return columnsAdded
 end
 
 exports("AddColumnsIfNotExists", AddColumnsIfNotExists)
-
+  
 -- Example of AddColumnsIfNotExists:
 -- exports['ata_core']:AddColumnsIfNotExists("players", {
 --     phone_number = "VARCHAR(20) DEFAULT NULL",
