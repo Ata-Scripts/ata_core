@@ -14,6 +14,8 @@ Config.Target = 'qb-target' -- ox_target , qb-target
 
 Config.SQL = 'oxmysql' -- oxmysql , ghmattimysql , mysql-async
 
+Config.Debug = true ---- true or false (for debug)
+
 
 Config.AdminGroup = {
     'admin',
@@ -32,3 +34,10 @@ function MoneyType(Money)
 end
 
 exports("MoneyType", MoneyType)
+
+
+function Debug(text)
+    if Config.Debug then
+        print(text)
+    end
+end
