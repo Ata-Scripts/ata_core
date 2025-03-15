@@ -141,7 +141,7 @@ function AddItem(source, item, count)
     if GetResourceState('ox_inventory') == 'started' then
         local canCarry = exports.ox_inventory:CanCarryItem(source, item, count)
         if canCarry then
-            exports.ox_inventory:AddItem(source, item, count)
+            exports.ox_inventory:AddItem(source, item, count or 1)
             return true
         else
             return false
@@ -149,7 +149,7 @@ function AddItem(source, item, count)
     elseif isESX then
         local xPlayer = ESX.GetPlayerFromId(source)
         if xPlayer.canCarryItem(item, count) then
-            xPlayer.addInventoryItem(item, count)
+            xPlayer.addInventoryItem(item, count or 1)
             return true
         else
             Notification(source, 'you dont have space in your inventory', 'error')
@@ -157,7 +157,8 @@ function AddItem(source, item, count)
         end
     elseif isQBCore then
         local xPlayer = QBCore.Functions.GetPlayer(source)
-        local canCarry = xPlayer.Functions.AddItem(item, count)
+        local canCarry = xPlayer.Functions.AddItem(item, count or 1)
+        print(count,item)
         if canCarry then
             return true
         else
