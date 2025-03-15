@@ -2,19 +2,19 @@
 Config = {}
 
 
-Config.Framework = 'qb-core' -- esx , esx-old , qb-core , qb-old
+Config.Framework = 'esx' -- esx , esx-old , qb-core , qb-old
 
 Config.SharedObject = 'QBCore:GetCoreObject' -- esx:getSharedObject , QBCore:GetCoreObject --- !! Just for old versions !!
 
-Config.TextUI = 'qb-core' -- esx , qb-core , okokTextUI
+Config.TextUI = 'esx' -- esx , qb-core , okokTextUI
 
 Config.Key = 38 -- 38 is E key
 
-Config.Target = 'qb-target' -- ox_target , qb-target
+Config.Target = 'ox_target' -- ox_target , qb-target
 
 Config.SQL = 'oxmysql' -- oxmysql , ghmattimysql , mysql-async
 
-Config.Debug = true ---- true or false (for debug)
+Config.Debug = false ---- true or false (for debug)
 
 
 Config.AdminGroup = {

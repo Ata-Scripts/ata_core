@@ -498,7 +498,7 @@ local function VersionCheck(resource)
     local current = GetResourceMetadata(resource, 'version', 0)
     
     if not current then
-        print('[^1ERROR^0] Could not get version for ' .. resource .. '. Make sure version is set in fxmanifest.lua')
+        Debug('[^1ERROR^0] Could not get version for ' .. resource .. '. Make sure version is set in fxmanifest.lua')
         return
     end
 
@@ -515,19 +515,27 @@ local function VersionCheck(resource)
                     if string.lower(k) == resourceLower then
                         found = true
                         local latest = v
-                        
-                        -- Compare versions
                         if latest ~= current then
                             print('\n')
                             print('^3[' .. resource .. ']  UPDATE AVAILABLE^0')
                             print('^3[' .. resource .. '] ^1 You are using version: ' .. current .. '^0')
                             print('^3[' .. resource .. '] ^2 New version available: ' .. latest .. '^0')
                             print('\n')
-                         end
+                        else
+                            Debug('^2[' .. resource .. '] You are using the latest version: ' .. current .. '^0')
+                        end
                         break
                     end
                 end
+                
+                if not found then
+                    Debug('^3[' .. resource .. '] Resource not found in version database^0')
+                end
+            else
+                Debug('^1[' .. resource .. '] Failed to parse version data^0')
             end
+        else
+            Debug('^1[' .. resource .. '] Failed to check for updates: ' .. (err or 'unknown error') .. '^0')
         end
     end, 'GET', '', { ["Content-Type"] = 'application/json' })
 end
