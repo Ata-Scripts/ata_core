@@ -28,6 +28,7 @@ local function ExecuteSQL(query, params)
 	end
 	return result
 end
+exports("ExecuteSQL", ExecuteSQL)
 
 -- Insert a single row and return the inserted ID
 local function InsertSQL(tableName, data)

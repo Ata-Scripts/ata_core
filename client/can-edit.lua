@@ -70,7 +70,15 @@ exports("RegisterMenu", RegisterMenu)
 function ShowMenu(menuName)
     lib.showMenu(menuName)
 end
-exports("ShowMenu", ShowMenu)
+exports("ShowMenu", ShowMenu) 
+
+
+------------------------------------------------------------------------------------------------
+
+function SetMenuOptions(menuName, option, index) 
+    lib.setMenuOptions(menuName, option, index)
+end
+exports("SetMenuOptions", SetMenuOptions)
 
 ------------------------------------------------------------------------------------------------
 

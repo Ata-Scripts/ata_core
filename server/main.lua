@@ -414,8 +414,8 @@ end
 exports('GetPlayerJobLabel', GetPlayerJobLabel)
 
 
-------
----
+------------------------------------------------------------------------------------------------
+
 
 function GetPlayerJob(source)
     if isESX then
@@ -426,16 +426,7 @@ function GetPlayerJob(source)
 end
 exports('GetPlayerJob', GetPlayerJob)
  
----------------------------------------------------------------------------------------------
-
-function GetPlayerJob(source)
-    if isESX then 
-        return ESX.GetPlayerFromId(source).getJob()
-    elseif isQBCore then
-        return QBCore.Functions.GetPlayer(source).PlayerData.job
-    end
-end
-exports('GetPlayerJob', GetPlayerJob)
+------------------------------------------------------------------------------------------------
 
 function SendNotificationToAdmins(msg)
     local admins = GetOnlineAdmins()
