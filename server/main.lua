@@ -92,6 +92,7 @@ end
 exports('AddMoney', AddMoney)
 
 
+
 ------------------------------------------------------------------------------------------------
 
 function HaveMoney(source,amount,type)
@@ -468,6 +469,96 @@ function GetPlayerSkin(source)
         return xPlayer.PlayerData.skin
     end
 end
+exports('GetPlayerSkin', GetPlayerSkin)
+
+
+------------------------------------------------------------------------------------------------
+
+function HaveLicense(source, license)
+    if isESX then
+        local haslicense = false
+        TriggerEvent('esx_license:checkLicense', source, license, function(cb)
+            haslicense = cb
+        end)
+        while haslicense == false do Wait(100) end
+        return haslicense
+    elseif isQBCore then
+        local xPlayer = QBCore.Functions.GetPlayer(source)
+        local licenses = xPlayer.PlayerData.metadata['licences']
+        return licenses and licenses[license] or false
+    end
+end
+exports('HaveLicense', HaveLicense)
+
+-- Example usage:
+-- local hasLicense = HaveLicense(playerId, 'driver')
+-- print('Player has driver license: ' .. tostring(hasLicense))
+
+------------------------------------------------------------------------------------------------
+
+function AddLicense(source, license)
+    if isESX then
+        local xPlayer = ESX.GetPlayerFromId(source)
+        local isGranted = false
+        TriggerEvent('esx_license:addLicense', source, license, function(cb)
+            isGranted = cb
+        end)
+        while isGranted == false do Wait(100) end
+        return isGranted
+    elseif isQBCore then
+        local xPlayer = QBCore.Functions.GetPlayer(source)
+        local licenses = xPlayer.PlayerData.metadata['licences']
+        if licenses and licenses[license] then return false end
+        if not licenses then licenses = {} end
+        licenses[license] = true
+        xPlayer.Functions.SetMetaData('licences', licenses)
+        xPlayer.Functions.Save()
+        return true
+    end
+end
+exports('AddLicense', AddLicense)
+
+-- Example usage:
+-- local success = AddLicense(playerId, 'driver')
+-- print('Driver license added: ' .. tostring(success))
+
+------------------------------------------------------------------------------------------------
+
+function RemoveLicense(source, license)
+    if isESX then
+        local xPlayer = ESX.GetPlayerFromId(source)
+        local isRevoked = false
+        TriggerEvent('esx_license:removeLicense', source, license, function(cb)
+            isRevoked = cb
+        end)
+        while isRevoked == false do Wait(100) end
+        return isRevoked
+    elseif isQBCore then
+       local xPlayer = QBCore.Functions.GetPlayer(source)
+       local Oldlicenses = xPlayer.PlayerData.metadata['licences']
+       if not Oldlicenses then return false end
+       local licenses = {}
+       for k,v in pairs(Oldlicenses) do
+        if k ~= license then
+            licenses[k] = v
+        end
+       end
+       xPlayer.Functions.SetMetaData('licences', licenses)
+       return true
+    end
+       
+end
+exports('RemoveLicense', RemoveLicense)
+
+-- Example usage:
+-- local success = RemoveLicense(playerId, 'driver')
+-- print('Driver license removed: ' .. tostring(success))
+
+
+
+
+
+
 
 
 -- ESX Events
