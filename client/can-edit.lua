@@ -4,10 +4,14 @@ function Notification(massage, type, time)
     if isESX then
         ESX.ShowNotification(massage, type, time)
     elseif isQBCore then
+        if type == 'info' then 
+            type = 'warning'
+        end
         QBCore.Functions.Notify(massage, type, time)
     end
 end 
 exports("Notification", Notification)
+exports("Notify", Notification)
 
 AddEventHandler('ata_core') 
 RegisterNetEvent('ata_core:Notification', function(massage, type, time)
@@ -118,4 +122,8 @@ function SpawnVehicle(model, coords, heading, cb, networked)
     end
 end
 exports("SpawnVehicle", SpawnVehicle)
+
+
+------------------------------------------------------------------------------------------------
+
 

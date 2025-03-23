@@ -95,7 +95,7 @@ exports('AddMoney', AddMoney)
 
 ------------------------------------------------------------------------------------------------
 
-function HaveMoney(source,amount,type)
+function HaveMoney(source,amount,type) 
     if isESX then
         local xPlayer = ESX.GetPlayerFromId(source)
         if type == 'cash' then
