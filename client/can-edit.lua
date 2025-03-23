@@ -108,3 +108,14 @@ exports("GetPlayerLoaded", GetPlayerLoaded)
 
 
 
+------------------------------------------------------------------------------------------------
+
+function SpawnVehicle(model, coords, heading, cb, networked)
+    if isESX then
+        ESX.Game.SpawnVehicle(model, coords, heading, cb, networked)
+    elseif isQBCore then
+        QBCore.Functions.SpawnVehicle(model, coords, heading, cb, networked)
+    end
+end
+exports("SpawnVehicle", SpawnVehicle)
+
