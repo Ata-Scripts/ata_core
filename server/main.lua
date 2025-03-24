@@ -77,17 +77,22 @@ function AddMoney(source,amount,type)
         local xPlayer = ESX.GetPlayerFromId(source)
         if type == 'cash' then
             xPlayer.addMoney(amount)
+            return true
         elseif type == 'bank' then
             xPlayer.addAccountMoney('bank', amount)
+            return true
         end
     elseif isQBCore then
         local xPlayer = QBCore.Functions.GetPlayer(source)
         if type == 'cash' then
             xPlayer.Functions.AddMoney('cash', amount)
+            return true
         elseif type == 'bank' then
             xPlayer.Functions.AddMoney('bank', amount)
+            return true
         end
     end
+    return false
 end
 exports('AddMoney', AddMoney)
 
@@ -153,6 +158,7 @@ function AddItem(source, item, count)
         local xPlayer = ESX.GetPlayerFromId(source)
         if xPlayer.canCarryItem(item, count) then
             xPlayer.addInventoryItem(item, count or 1)
+
             return true
         else
             Notification(source, 'you dont have space in your inventory', 'error')
@@ -161,7 +167,7 @@ function AddItem(source, item, count)
     elseif isQBCore then
         local xPlayer = QBCore.Functions.GetPlayer(source)
         local canCarry = xPlayer.Functions.AddItem(item, count or 1)
-        print(count,item)
+      
         if canCarry then
             return true
         else
@@ -173,7 +179,23 @@ function AddItem(source, item, count)
 end
 exports('AddItem', AddItem)
 
- 
+function AddWeapon(source, weapon, ammo)
+    if isESX then
+        local xPlayer = ESX.GetPlayerFromId(source)
+        xPlayer.addWeapon(weapon, ammo)
+        return true
+    elseif isQBCore then
+        local xPlayer = QBCore.Functions.GetPlayer(source)
+        xPlayer.Functions.AddItem(weapon, 1, nil, {
+            serial = tostring(QBCore.Shared.RandomInt(2) .. QBCore.Shared.RandomInt(2) .. QBCore.Shared.RandomInt(2) .. QBCore.Shared.RandomInt(2) .. QBCore.Shared.RandomInt(2) .. QBCore.Shared.RandomInt(2)),
+            ammo = ammo,
+        })
+        return true
+    end
+    return false
+end
+exports('AddWeapon', AddWeapon)
+
 ------------------------------------------------------------------------------------------------
 
 
@@ -555,6 +577,122 @@ exports('RemoveLicense', RemoveLicense)
 -- print('Driver license removed: ' .. tostring(success))
 
 
+function GiveVehicle(src, props, stored)
+    if isESX then
+        local xPlayer = ESX.GetPlayerFromId(src)
+        exports['ata_core']:InsertSQL("owned_vehicles", {
+            owner = xPlayer.identifier,
+            plate = props.plate,
+            vehicle = json.encode(props),
+            stored = stored,
+        })
+        return true
+    elseif isQBCore then
+        local xPlayer = QBCore.Functions.GetPlayer(src)
+        exports['ata_core']:InsertSQL("player_vehicles ", {
+            license = xPlayer.PlayerData.license,
+            citizenid = xPlayer.PlayerData.citizenid,
+            vehicle = props.model,
+            hash = GetHashKey(props.model),
+            mods = json.encode(props.mods),
+            plate = props.plate,
+            state = stored,
+            garage = "A"
+        })
+        return true
+    end
+    return false
+end
+exports('GiveVehicle', GiveVehicle)
+
+
+------------------------------------------------------------------------------------------------
+
+
+
+
+
+------------------------------------------------------------------------------------------------
+
+
+
+function AddVehicleToGarage(source, vehicleName, plate, garage, props)
+    local playerData, playerIdentifier
+
+    if isESX then
+        playerData = ESX.GetPlayerFromId(source)
+        playerIdentifier = playerData.identifier
+        
+        -- Generate plate if not provided
+        if not plate or plate == "" then
+            plate = string.upper(ESX.Math.Trim(GetRandomNumber(1) .. GetRandomLetter(2) .. GetRandomNumber(3) .. GetRandomLetter(2)))
+        end
+        
+        local vehicleData = props or {model = vehicleName}
+        if type(vehicleData) ~= "table" then vehicleData = {model = vehicleName} end
+        
+        exports['ata_core']:InsertSQL("owned_vehicles", {
+            owner = playerIdentifier,
+            plate = plate,
+            vehicle = json.encode(vehicleData),
+            stored = 1,
+            garage_name = garage or "Central"
+        })
+        
+        -- Set vehicle keys for ESX
+        TriggerClientEvent('esx_vehiclelock:setVehicleOwned', source, plate)
+        
+        return true, plate
+    elseif isQBCore then
+        playerData = QBCore.Functions.GetPlayer(source)
+        if not playerData then return false end
+        
+        playerIdentifier = playerData.PlayerData.citizenid
+        
+        -- Generate a proper plate if not provided
+        if not plate or plate == "" then
+            plate = string.upper(QBCore.Shared.RandomInt(1) .. QBCore.Shared.RandomStr(2) .. QBCore.Shared.RandomInt(3) .. QBCore.Shared.RandomStr(2))
+        end
+        
+        -- Handle vehicle properties
+        local vehicleMods = '{}'
+        if props and type(props) == "table" then
+            if props.mods then
+                vehicleMods = json.encode(props.mods)
+            else
+                vehicleMods = json.encode(props)
+            end
+        end
+        
+        exports['ata_core']:InsertSQL("player_vehicles", {
+            license = playerData.PlayerData.license,
+            citizenid = playerIdentifier,
+            vehicle = vehicleName,
+            hash = GetHashKey(vehicleName),
+            mods = vehicleMods,
+            plate = plate,
+            state = 1,
+            garage = garage or "pillboxgarage"
+        })
+        
+        -- Set vehicle keys for QBCore
+        TriggerClientEvent('vehiclekeys:client:SetOwner', source, plate)
+        
+        return true, plate
+    end
+    return false
+end
+exports('AddVehicleToGarage', AddVehicleToGarage)
+
+-- Example usage:
+-- ESX:
+-- local success, plate = exports['ata_core']:AddVehicleToGarage(playerId, 'adder', nil, 'Central')
+-- if success then print('Vehicle added with plate: '..plate) end
+--
+-- QBCore:
+-- local vehicleProps = {model = 't20', mods = {color1 = 120, modEngine = 3, modBrakes = 2}}
+-- local success, plate = exports['ata_core']:AddVehicleToGarage(playerId, 't20', 'ABC123', 'pillboxgarage', vehicleProps)
+-- if success then print('Vehicle added with plate: '..plate) end
 
 
 
