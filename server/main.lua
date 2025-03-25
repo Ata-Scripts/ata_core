@@ -302,17 +302,19 @@ exports('GetPhoneNumber', GetPhoneNumber)
 ------------------------------------------------------------------------------------------------
 ---
 
-
 function GetPlayerGroup(source)
     if isESX then
         local xPlayer = ESX.GetPlayerFromId(source)
         return xPlayer.getGroup()
     elseif isQBCore then
-         local permissions = QBCore.Functions.GetPermission(tonumber(source))
-            for group, hasPermission in pairs(permissions) do
+        local permissions = QBCore.Functions.GetPermission(source)
+        for group, hasPermission in pairs(permissions) do
             if hasPermission then
                 return group
             end
+        end
+        if IsPlayerAceAllowed(source, 'command') then
+            return 'god'
         end
     end
 end
