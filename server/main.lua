@@ -325,9 +325,11 @@ exports('GetPlayerGroup', GetPlayerGroup)
 function GetPlayerIdentifier(source)
     if isESX then
         local xPlayer = ESX.GetPlayerFromId(source)
+        if not xPlayer then return false end
         return xPlayer.identifier
     elseif isQBCore then
         local xPlayer = QBCore.Functions.GetPlayer(source)
+        if not xPlayer then return false end
         return xPlayer.PlayerData.citizenid
     end
 end

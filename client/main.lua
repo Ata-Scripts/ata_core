@@ -90,6 +90,15 @@ function GetPlayerIsValid()
 end
 exports("GetPlayerIsValid", GetPlayerIsValid)
 
+function GetPlayerData()
+    if isESX then
+        return ESX.GetPlayerData() ~= nil
+    elseif isQBCore then
+        return QBCore.Functions.GetPlayerData() ~= nil
+    end
+end
+exports("GetPlayerData", GetPlayerData)
+
 
 function GetPlayerJobName()
     if not GetPlayerIsValid then return false end
