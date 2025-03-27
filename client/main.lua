@@ -92,9 +92,9 @@ exports("GetPlayerIsValid", GetPlayerIsValid)
 
 function GetPlayerData()
     if isESX then
-        return ESX.GetPlayerData() ~= nil
+        return ESX.GetPlayerData()
     elseif isQBCore then
-        return QBCore.Functions.GetPlayerData() ~= nil
+        return QBCore.Functions.GetPlayerData()
     end
 end
 exports("GetPlayerData", GetPlayerData)
