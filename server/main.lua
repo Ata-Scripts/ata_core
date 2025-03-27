@@ -774,4 +774,16 @@ CreateThread(function()
     VersionCheck('ata_core')
 end)
 
+function GetItemData(source, item, metadata)
+    if GetResourceState('ox_inventory') == 'started' then
+        return exports.ox_inventory:GetItem(source, item, metadata, false)
+    elseif isQBCore then
+        return QBCore.Shared.Items[item]
+    elseif isESX then
+        return ESX.Items[item]
+    end
+    return nil
+end
+exports('GetItemData', GetItemData)
+
 
