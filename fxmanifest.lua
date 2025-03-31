@@ -6,7 +6,7 @@ version '1.0.9'
 lua54 'yes'
 
 shared_scripts {
-    '@ox_lib/init.lua',
+   -- '@ox_lib/init.lua',
 	'config.lua'
 }
 
@@ -23,5 +23,5 @@ server_scripts {
 
 
 dependencies {
-	'ox_lib'
+--	'ox_lib'
 }

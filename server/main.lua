@@ -120,6 +120,29 @@ end
 exports('HaveMoney', HaveMoney)
 
 
+
+------------------------------------------------------------------------------------------------
+
+function GetMoney(source,type) 
+    if isESX then
+        local xPlayer = ESX.GetPlayerFromId(source)
+        if type == 'cash' then
+            return xPlayer.getAccount('money').money
+        elseif type == 'bank' then
+            return xPlayer.getAccount('bank').money
+        end
+    elseif isQBCore then
+        local xPlayer = QBCore.Functions.GetPlayer(source)
+        if type == 'cash' then
+            return xPlayer.Functions.GetMoney('cash')
+        elseif type == 'bank' then
+            return xPlayer.Functions.GetMoney('bank')
+        end
+    end
+end
+exports('GetMoney', GetMoney)
+
+
 ------------------------------------------------------------------------------------------------
 
 function RemoveMoney(source,amount,type)
