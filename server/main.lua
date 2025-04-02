@@ -121,6 +121,29 @@ end
 exports('HaveMoney', HaveMoney)
 
 
+
+------------------------------------------------------------------------------------------------
+
+function GetMoney(source,type) 
+    if isESX then
+        local xPlayer = ESX.GetPlayerFromId(source)
+        if type == 'cash' then
+            return xPlayer.getAccount('money').money
+        elseif type == 'bank' then
+            return xPlayer.getAccount('bank').money
+        end
+    elseif isQBCore then
+        local xPlayer = QBCore.Functions.GetPlayer(source)
+        if type == 'cash' then
+            return xPlayer.Functions.GetMoney('cash')
+        elseif type == 'bank' then
+            return xPlayer.Functions.GetMoney('bank')
+        end
+    end
+end
+exports('GetMoney', GetMoney)
+
+
 ------------------------------------------------------------------------------------------------
 
 function RemoveMoney(source,amount,type)
@@ -630,10 +653,23 @@ function AddVehicleToGarage(source, vehicleName, plate, garage, props)
         
         -- Generate plate if not provided
         if not plate or plate == "" then
-            plate = string.upper(ESX.Math.Trim(GetRandomNumber(1) .. GetRandomLetter(2) .. GetRandomNumber(3) .. GetRandomLetter(2)))
+            plate = string.upper(ESX.Math.Trim(math.random(1, 9 ) .. math.random(00,99) .. math.random(1, 9) .. math.random(00,99)))
+        end
+        -- Just use props directly without modifying it
+        -- If props is not a table with required fields, create proper structure
+        if type(props) ~= "table" then
+            props = {}
         end
         
-        local vehicleData = props or {model = vehicleName}
+        if not props.plate then
+            props.plate = plate
+        end
+        
+        if not props.model then
+            props.model = GetHashKey(vehicleName)
+        end
+        
+        local vehicleData = props
         if type(vehicleData) ~= "table" then vehicleData = {model = vehicleName} end
         
         exports['ata_core']:InsertSQL("owned_vehicles", {
@@ -641,10 +677,10 @@ function AddVehicleToGarage(source, vehicleName, plate, garage, props)
             plate = plate,
             vehicle = json.encode(vehicleData),
             stored = 1,
-            garage_name = garage or "Central"
-        })
+            parking = garage or "SanAndreasAvenue"
+        }) 
         
-        -- Set vehicle keys for ESX
+        -- Set vehicle keys for ESX 
         TriggerClientEvent('esx_vehiclelock:setVehicleOwned', source, plate)
         
         return true, plate

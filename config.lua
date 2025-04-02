@@ -4,7 +4,7 @@ Config = {}
 
 Config.Framework = 'qb-core' -- esx , esx-old , qb-core , qb-old
 
-Config.SharedObject = 'QBCore:GetCoreObject' -- esx:getSharedObject , QBCore:GetCoreObject --- !! Just for old versions !!
+Config.SharedObject = 'esx:getSharedObject' -- esx:getSharedObject , QBCore:GetCoreObject --- !! Just for old versions !!
 
 Config.TextUI = 'qb-core' -- esx , qb-core , okokTextUI
 
