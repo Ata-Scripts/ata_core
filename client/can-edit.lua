@@ -109,9 +109,6 @@ function GetPlayerLoaded()
 end
 exports("GetPlayerLoaded", GetPlayerLoaded)
 
-
-
-
 ------------------------------------------------------------------------------------------------
 
 function SpawnVehicle(model, coords, heading, cb, networked)

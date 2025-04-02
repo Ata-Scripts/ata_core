@@ -65,6 +65,7 @@ function Notification (source, message, type, time)
 end
 
 exports('Notification', Notification)
+exports('Notify', Notification)
 --- example 
 --- exports['ata_core']:Notification(source, "Hello", "error", 10000)
 
