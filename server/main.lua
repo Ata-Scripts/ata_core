@@ -522,14 +522,26 @@ exports('SendNotificationToAdmins', SendNotificationToAdmins)
 ------------------------------------------------------------------------------------------------
 
 
-function PlayerHasGroup(source,group)
+function PlayerHasGroup(source, group)
     if isESX then
         local xPlayer = ESX.GetPlayerFromId(source)
         return xPlayer.getGroup() == group
     elseif isQBCore then
+        local perms = QBCore.Functions.GetPermission(source)
+        if perms and perms[group] then
+            return perms[group] == true
+        end
+        -- fallback for older QBCore versions or if GetPermission returns a string
         local xPlayer = QBCore.Functions.GetPlayer(source)
-        return xPlayer.PlayerData.group == group
+        if xPlayer and xPlayer.PlayerData and xPlayer.PlayerData.group then
+            return xPlayer.PlayerData.group == group
+        end
+        if IsPlayerAceAllowed(source, 'command') then
+            return true
+        end
+        return false
     end
+    return false
 end
 exports('PlayerHasGroup', PlayerHasGroup)
 
