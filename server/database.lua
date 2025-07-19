@@ -11,16 +11,18 @@ local function ExecuteSQL(query, params)
 		IsBusy = false
 	end
 
-	if Config.SQL == "oxmysql" then
+	if GetResourceState("oxmysql") == "started" then
 		if MySQL == nil then
 			exports.oxmysql:execute(query, params, handleResult)
 		else
-			MySQL.query(query, params, handleResult) 
+			MySQL.query(query, params, handleResult)
 		end
-	elseif Config.SQL == "ghmattimysql" then
+	elseif GetResourceState("ghmattimysql") == "started" then
 		exports.ghmattimysql:execute(query, params, handleResult)
-	elseif Config.SQL == "mysql-async" then
+	elseif GetResourceState("mysql-async") == "started" then
 		MySQL.Async.fetchAll(query, params, handleResult)
+	else
+		error("No supported SQL resource found (oxmysql, ghmattimysql, mysql-async)")
 	end
 
 	while IsBusy do
@@ -217,3 +219,17 @@ exports("FindSQL", FindSQL)
 
 -- Example of FindSQL:
 -- local money = exports['ata_core']:FindSQL("users", "money", "identifier = 'license:123'")
+
+local function FindColumn(tableName, column)
+	if type(tableName) ~= "string" or type(column) ~= "string" then
+		return 'STRING ERROR'
+	end
+	local query = string.format("DESCRIBE %s %s", tableName, column)
+	local result = ExecuteSQL(query)
+	return type(result) == 'table' and result[1] ~= nil
+end
+exports("FindColumn", FindColumn)
+
+-- Example of FindColumn:
+-- local result = exports['ata_core']:FindColumn("users", "money")
+-- print(result)

@@ -4,13 +4,44 @@ isESX = false
 isQBCore = false
 
 local function Framework()
-    if Config.Framework == 'esx' then
+    if Config.Framework == 'auto' or Config.Framework == 'AUTO' or Config.Framework == 'Auto' then
+        -- Try to auto-detect framework
+        if GetResourceState and GetResourceState("es_extended") == "started" then
+            ESX = exports["es_extended"]:getSharedObject()
+            isESX = true
+            return ESX
+        elseif GetResourceState and GetResourceState("qb-core") == "started" then
+            QBCore = exports['qb-core']:GetCoreObject()
+            isQBCore = true
+            return QBCore
+        elseif GetResourceState and (GetResourceState("esx") == "started" or GetResourceState("esx_legacy") == "started") then
+            Citizen.CreateThread(function()
+                while true do
+                    Citizen.Wait(0)
+                    if ESX == nil then
+                        TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
+                    end
+                end
+            end)
+            isESX = true
+            return ESX
+        elseif GetResourceState and GetResourceState("qbcore") == "started" then
+            Citizen.CreateThread(function() 
+                while true do
+                    Citizen.Wait(0)
+                    if QBCore == nil then
+                        TriggerEvent('QBCore:GetObject', function(obj) QBCore = obj end)
+                    end
+                end
+            end)
+            isQBCore = true
+            return QBCore
+        end
+    elseif Config.Framework == 'esx' then
         ESX = exports["es_extended"]:getSharedObject()
         isESX = true
         return ESX
-    end
-
-    if Config.Framework == 'esx-old' then
+    elseif Config.Framework == 'esx-old' then
         Citizen.CreateThread(function()
             while true do
                 Citizen.Wait(0)
@@ -21,15 +52,11 @@ local function Framework()
         end)
         isESX = true
         return ESX
-    end
-
-    if Config.Framework == 'qb-core' then
+    elseif Config.Framework == 'qb-core' then
         QBCore = exports['qb-core']:GetCoreObject()
         isQBCore = true
         return QBCore
-    end
-
-    if Config.Framework == 'qb-old' then
+    elseif Config.Framework == 'qb-old' then
         Citizen.CreateThread(function()
             while true do
                 Citizen.Wait(0)
@@ -41,6 +68,7 @@ local function Framework()
         isQBCore = true
         return QBCore
     end
+    return nil
 end
 Framework()
 exports('Framework', Framework)

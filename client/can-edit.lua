@@ -1,6 +1,6 @@
 
 
-function Notification(massage, type, time)
+function Notification(massage, type, time) 
     if isESX then
         ESX.ShowNotification(massage, type, time)
     elseif isQBCore then

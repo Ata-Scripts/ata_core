@@ -4,23 +4,45 @@ isESX = false
 isQBCore = false
 
 local function Framework()
-    if Config.Framework == 'esx' then
+    if Config.Framework == 'auto' or Config.Framework == 'AUTO' or Config.Framework == 'Auto' then
+        -- Try to auto-detect ESX (new)
+        if GetResourceState("es_extended") == "started" then
+            ESX = exports["es_extended"]:getSharedObject()
+            isESX = true
+            return ESX
+        -- Try to auto-detect QBCore (new)
+        elseif GetResourceState("qb-core") == "started" then
+            QBCore = exports['qb-core']:GetCoreObject()
+            isQBCore = true
+            return QBCore
+        -- Try to auto-detect ESX (old)
+        elseif GetResourceState("esx") == "started" or GetResourceState("esx_legacy") == "started" then
+            TriggerEvent(Config.SharedObject or 'esx:getSharedObject', function(obj) ESX = obj end)
+            isESX = true
+            return ESX
+        -- Try to auto-detect QBCore (old)
+        elseif GetResourceState("qbcore") == "started" then
+            TriggerEvent(Config.SharedObject or 'QBCore:GetObject', function(obj) QBCore = obj end)
+            isQBCore = true
+            return QBCore
+        end
+    elseif framework == 'esx' then
         if GetResourceState("es_extended") == "started" then
             ESX = exports["es_extended"]:getSharedObject()
             isESX = true
             return ESX
         end
-    elseif Config.Framework == 'esx-old' then
+    elseif framework == 'esx-old' then
         TriggerEvent(Config.SharedObject, function(obj) ESX = obj end)
         isESX = true
         return ESX
-    elseif Config.Framework == 'qb-core' then
+    elseif framework == 'qb-core' then
         if GetResourceState("qb-core") == "started" then
             QBCore = exports['qb-core']:GetCoreObject()
             isQBCore = true
             return QBCore
         end
-    elseif Config.Framework == 'qb-old' then
+    elseif framework == 'qb-old' then
         TriggerEvent(Config.SharedObject, function(obj) QBCore = obj end)
         isQBCore = true
         return QBCore
@@ -203,6 +225,9 @@ function AddItem(source, item, count)
 end
 exports('AddItem', AddItem)
 
+
+------------------------------------------------------------------------------------------------
+
 function AddWeapon(source, weapon, ammo)
     if isESX then
         local xPlayer = ESX.GetPlayerFromId(source)
@@ -337,6 +362,7 @@ function GetPlayerGroup(source)
                 return group
             end
         end
+        
         if IsPlayerAceAllowed(source, 'command') then
             return 'god'
         end
@@ -823,4 +849,21 @@ function GetItemData(source, item, metadata)
 end
 exports('GetItemData', GetItemData)
 
+
+------------------------------------------------------------------------------------------------
+
+function RegisterUseableItem(...)
+    local args = { ... }
+    if isQBCore then
+        return QBCore.Functions.CreateUseableItem(args[1], args[2])
+    elseif isESX then
+        return ESX.RegisterUsableItem(args[1], args[2])
+    else
+        return nil
+    end
+end
+exports('RegisterUseableItem', RegisterUseableItem)
+
+
+------------------------------------------------------------------------------------------------
 

@@ -2,11 +2,11 @@ fx_version 'cerulean'
 game 'gta5'
 author 'ATA REVALS - https://github.com/atarevals'
 description 'All Rights Reserved - ata.tebex.io'
-version '1.0.9' 
+version '1.1.0' 
 lua54 'yes'
 
 shared_scripts {
-   -- '@ox_lib/init.lua',
+   '@ox_lib/init.lua',
 	'config.lua'
 }
 
@@ -23,5 +23,5 @@ server_scripts {
 
 
 dependencies {
---	'ox_lib'
+	'ox_lib'
 }
