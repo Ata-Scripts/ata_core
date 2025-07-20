@@ -1,6 +1,7 @@
 local npcList = {}
 
 local function playAnimation(npc, animType)
+    local isSenario = false
     local animDict = "missheistdockssetup1clipboard@base"
     local animName = "base"
 
@@ -44,17 +45,19 @@ local function playAnimation(npc, animType)
         animDict = "mini@strip_club@idles@bouncer@base"
         animName = "base"
     else
-        print('Animation Not Found')
-        return
+        TaskStartScenarioInPlace(npc, animType, 0, true)
+        isSenario = true 
     end
 
+    if not isSenario then
     RequestAnimDict(animDict)
     while not HasAnimDictLoaded(animDict) do
         Wait(100)
     end
 
     TaskPlayAnim(npc, animDict, animName, 8.0, -8.0, -1, 1, 0, true, true, true)
-    RemoveAnimDict(animDict)
+        RemoveAnimDict(animDict)
+    end
 end
 
 -- Function to create NPC with interaction
