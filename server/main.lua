@@ -445,11 +445,11 @@ exports('GetOnlineAdmins', GetOnlineAdmins)
 ------------------------------------------------------------------------------------------------
 
 
-function GetPlayerFromIdentity(identity)
+function GetPlayerFromIdentity(identity) 
     if isESX then
         return ESX.GetPlayerFromIdentifier(identity)
     elseif isQBCore then
-        return QBCore.Functions.GetPlayerFromId(identity)
+        return QBCore.Functions.GetPlayerByCitizenId(identity)
     end
 end
 exports('GetPlayerFromIdentity', GetPlayerFromIdentity)
