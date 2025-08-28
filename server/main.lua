@@ -386,6 +386,20 @@ end
 exports('GetPlayerIdentifier', GetPlayerIdentifier)
 
 
+
+------------------------------------------------------------------------------------------------
+
+function GetPlayerName(source) 
+    if isESX then
+        local xPlayer = ESX.GetPlayerFromId(source)
+        return xPlayer.getName()
+    elseif isQBCore then
+        local xPlayer = QBCore.Functions.GetPlayer(source)
+        return xPlayer.PlayerData.charinfo.firstname .. ' ' .. xPlayer.PlayerData.charinfo.lastname
+    end
+end
+exports('GetPlayerName', GetPlayerName)
+
 ------------------------------------------------------------------------------------------------
 
 function GetAllPlayers()
