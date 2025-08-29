@@ -892,4 +892,69 @@ exports('RegisterUseableItem', RegisterUseableItem)
 
 
 ------------------------------------------------------------------------------------------------
+---
+
+local cachedUsers = {}
+
+function GetPlayerAvatar(source)
+    if cachedUsers[source] then
+        return cachedUsers[source].avatar
+    end
+
+    local getPromise = promise.new()
+
+    local function resolveAvatar(url)
+        getPromise:resolve({ avatar = url })
+    end
+
+    -- check discord avatar
+    local discordId = GetPlayerIdentifierByType(source, 'discord')
+    if discordId and discordId ~= '' then
+        discordId = discordId:gsub('discord:', '')
+        PerformHttpRequest('https://ata-revals.vercel.app/api/pfp/'..discordId..'/image?format=png', function(statusCode, _, _)
+            if statusCode == 200 then
+                return resolveAvatar('https://ata-revals.vercel.app/api/pfp/'..discordId..'/image?format=png')
+            end
+
+            -- discord failed -> try fivem
+            local fivemId = GetPlayerIdentifierByType(source, 'fivem')
+            if fivemId and fivemId ~= '' then
+                fivemId = fivemId:gsub('fivem:', '')
+                PerformHttpRequest("https://policy-live.fivem.net/api/getUserInfo/" .. fivemId, function(code, response, _)
+                    if code == 200 then
+                        local responseData = json.decode(response)
+                        return resolveAvatar("https://forum.cfx.re/" .. responseData.avatar_template:gsub("{size}", "512"))
+                    else
+                        resolveAvatar('https://r2.fivemanage.com/DPJcYLXhaoROQOCQ9fncX/profile.jpg')
+                    end
+                end, "GET", "", {["Content-Type"] = "application/json"})
+            else
+                resolveAvatar('https://r2.fivemanage.com/DPJcYLXhaoROQOCQ9fncX/profile.jpg')
+            end
+        end, 'GET', '', {['Content-Type'] = 'application/json'})
+    else
+        -- no discord -> direct fivem
+        local fivemId = GetPlayerIdentifierByType(source, 'fivem')
+        if fivemId and fivemId ~= '' then
+            fivemId = fivemId:gsub('fivem:', '')
+            PerformHttpRequest("https://policy-live.fivem.net/api/getUserInfo/" .. fivemId, function(code, response, _)
+                if code == 200 then
+                    local responseData = json.decode(response)
+                    return resolveAvatar("https://forum.cfx.re/" .. responseData.avatar_template:gsub("{size}", "512"))
+                else
+                    resolveAvatar('https://r2.fivemanage.com/DPJcYLXhaoROQOCQ9fncX/profile.jpg')
+                end
+            end, "GET", "", {["Content-Type"] = "application/json"})
+        else
+            resolveAvatar('https://r2.fivemanage.com/DPJcYLXhaoROQOCQ9fncX/profile.jpg')
+        end
+    end
+
+    local user = Citizen.Await(getPromise)
+    cachedUsers[source] = user
+    return user.avatar
+end
+exports('GetPlayerAvatar', GetPlayerAvatar)
+
+
 
