@@ -2,7 +2,7 @@ fx_version 'cerulean'
 game 'gta5'
 author 'ATA REVALS - https://github.com/atarevals'
 description 'All Rights Reserved - ata.tebex.io'
-version '1.1.1' 
+version '1.1.2'
 lua54 'yes'
 
 shared_scripts {
