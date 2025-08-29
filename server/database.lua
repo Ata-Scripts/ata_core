@@ -209,15 +209,22 @@ local function FindSQL(tableName, column, where)
 		return 'STRING ERROR'
 	end
 
-	local query = string.format("SELECT %s FROM %s WHERE %s", column, tableName, where)
-	local result = ExecuteSQL(query)
-
-	return result and result[1] and result[1][column] or false
+	-- Allow '*' to select all columns
+	if column == "*" then
+		local query = string.format("SELECT * FROM %s WHERE %s", tableName, where)
+		local result = ExecuteSQL(query)
+		return result or false
+	else
+		local query = string.format("SELECT %s FROM %s WHERE %s", column, tableName, where)
+		local result = ExecuteSQL(query)
+		return result and result[1] and result[1][column] or false
+	end
 end
 
 exports("FindSQL", FindSQL)
 
 -- Example of FindSQL:
+-- local userData = exports['ata_core']:FindSQL("users", "*", "identifier = 'license:123'")
 -- local money = exports['ata_core']:FindSQL("users", "money", "identifier = 'license:123'")
 
 local function FindColumn(tableName, column)
