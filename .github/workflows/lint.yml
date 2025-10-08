@@ -1,6 +1,6 @@
 name: Lint
 on: [push, pull_request]
-jobs:
+jobs: 
   lint:
     name: Lint Resource
     runs-on: ubuntu-latest
